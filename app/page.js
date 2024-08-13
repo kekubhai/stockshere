@@ -1,19 +1,39 @@
 "use client"
 import Image from "next/image";
 import Header from "./components/Header";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 
 export default function Home() {
-  const [searchType, setSearchType] = useState("Product Name");
-  const [searchQuery, setSearchQuery] = useState("");
   const [productForm, setproductForm] = useState({})
   const handleChange =(e)=>{
     setproductForm({...productForm,[e.target.name]:e.target.value})
   }
   console.log("me here")
-  const addProduct =()=>{
+  const addProduct =async  (e)=>{
+    e.preventDefault();
 
-  }
+    try {
+        const response = await fetch('/api/product', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productForm)
+        });
+
+        if (response.ok) {
+            console.log("Product added succesfully");
+        }
+        else{
+          console.log("Error adding Products");
+        }
+    } catch (error) {
+        console.error('Error :', error);
+   
+    }
+};
+
+ 
   return (
     <>
       <Header />
@@ -78,8 +98,8 @@ export default function Home() {
           <div className="flex mb-2">
             <select
               className="w-1/4 px-3 py-2 border text-black rounded-l focus:outline-none focus:ring-2 focus:ring-red-400"
-              value={searchType}
-              onChange={(e) => setSearchType(e.target.value)}
+            
+             
             >
               <option value="Product Name">Product Name</option>
               <option value="Quantity">Quantity</option>
@@ -87,11 +107,8 @@ export default function Home() {
             </select>
 
             <input
-              type={searchType === "Product Name" ? "text" : "number"}
               className="w-3/4 px-3 py-2 border rounded-r text-black focus:outline-none focus:ring-2 focus:ring-red-400"
-              placeholder={`Search by ${searchType}`}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+            
             />
           </div>
         </div>
