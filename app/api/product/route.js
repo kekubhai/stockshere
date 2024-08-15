@@ -1,40 +1,4 @@
-/* import { MongoClient } from "mongodb";
-import { NextResponse } from "next/server";
 
-
-export async function GET(request){
-
-
-    const database=client.db('stock');
-    const inventory=database.collection('inventory');
-const uri="mongodb+srv://anirbanghosh060:3CtBku79qz9pP2IK@cluster0.oi9cl.mongodb.net/";
-  const client =new MongoClient(uri);
-  try{
-    const query={ };
-    const allProducts = await inventory.find(query).toArray();
-    return NextResponse.json({"a": 18,allProducts})
-  }
-  finally{
-    await client.close();
-  }
-}
-
-export async function  POST(request){
-    let body=request.body
-    const database=client.db('stock');
-    const inventory=database.collection('inventory');
-const uri="mongodb+srv://anirbanghosh060:3CtBku79qz9pP2IK@cluster0.oi9cl.mongodb.net/";
-  const client =new MongoClient(uri);
-  try{
-    const query={ };
-    const allProducts = await inventory.insertOne(body)
-    return NextResponse.json({product,ok:true})
-  }
-  finally{
-    await client.close();
-  }
-}
-*/
 
 import { MongoClient } from "mongodb";
 import { NextResponse } from "next/server";
@@ -59,39 +23,35 @@ export async function GET(request) {
     const inventory = database.collection('inventory');
 
     const query = {};
-    const allProducts = await inventory.find(query).toArray();
+    const Products = await inventory.find(query).toArray();
 
-    return NextResponse.json({ a: 18, allProducts });
+    return NextResponse.json({ success:true,Products });
   } catch (error) {
     console.error('Error fetching products:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: ' Server Error' }, { status: 500 });
   } finally {
     if (client) {
       await client.close();
-      client = null;  // Ensure client is set to null after closing
+       // Ensure client is set to null after closing
     }
   }
 }
 
 export async function POST(request) {
-  let body= await request.body.json()
+  let body= await request.json()
   console.log(body)
+  console.log("me")
+  const uri="mongodb+srv://anirbanghosh060:3CtBku79qz9pP2IK@cluster0.oi9cl.mongodb.net/";
+  const client=new MongoClient(uri);
   try {
-    const client = await connectToDatabase();
+  
     const database = client.db('stock');
     const inventory = database.collection('inventory');
+    const product = await inventory.insertOne(body);
 
-    const body = await request.json();  // Parse the request body
-    const result = await inventory.insertOne(body);
-
-    return NextResponse.json({ product: result.ops[0], ok: true });
-  } catch (error) {
-    console.error('Error adding product:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ product, ok: true });
+  
   } finally {
-    if (client) {
       await client.close();
-      client = null;  // Ensure client is set to null after closing
-    }
   }
 }
